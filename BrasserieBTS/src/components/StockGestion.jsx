@@ -20,7 +20,7 @@ function StockGestion({ activeTab, setActiveTab, TABS, API_URL }) {
   const [formatLabel, setFormatLabel] = useState('')
   const [stockForm,   setStockForm]   = useState(EMPTY_STOCK)
 
-  const [editId,       setEditId]       = useState(null)
+  const [editId,        setEditId]        = useState(null)
   const [stockEditForm, setStockEditForm] = useState(EMPTY_STOCK)
 
   const [loading, setLoading] = useState(true)
@@ -209,6 +209,14 @@ function StockGestion({ activeTab, setActiveTab, TABS, API_URL }) {
 
           <section className="panel">
             <h2 className="panel-title">Stocks</h2>
+
+            {/* Images des produits */}
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', alignItems: 'center' }}>
+              <img src="/ressources/produits-01.png" alt="produit 1" style={{ height: '60px', objectFit: 'contain' }} />
+              <img src="/ressources/produits-02.png" alt="produit 2" style={{ height: '60px', objectFit: 'contain' }} />
+              <img src="/ressources/produits-03.png" alt="produit 3" style={{ height: '60px', objectFit: 'contain' }} />
+            </div>
+
             <div className="table-wrap">
               <table>
                 <thead><tr><th>ID</th><th>Type</th><th>Format</th><th>Quantité</th><th>Actions</th></tr></thead>
