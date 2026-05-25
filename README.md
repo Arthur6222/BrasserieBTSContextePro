@@ -9,16 +9,17 @@ Application full-stack de gestion de stock pour brasserie.
 
 ##  Installation et Lancement
 
-### 1. Serveur (Backend)
+### 1. Backend
 ```bash
-# Entrer dans le dossier du serveur
-cd backend
+
 
 # Installer les dépendances
 dart pub get
 
 # Lancer le serveur (port 8080)
 dart run bin/server.dart
+
+### 2. Front-end
 
 # Lancer l'interface (Vite)
 npm run dev
