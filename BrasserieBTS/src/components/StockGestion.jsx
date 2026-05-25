@@ -116,15 +116,13 @@ function StockGestion({ activeTab, setActiveTab, TABS, API_URL }) {
     flash('Stock supprimé.'); fetchAll()
   }
 
-  if (loading) return <p className="loading">Chargement...</p>
-
   return (
     <>
       <nav className="tabs">
         {TABS.map(tab => (
           <button
             key={tab.id}
-            className={`tab ${activeTab === tab.id ? 'is-active' : ''}`}
+            className={`tab ${activeTab === tab.id ? 'active' : ''}`}
             onClick={() => setActiveTab(tab.id)}
           >
             {tab.label}
@@ -132,142 +130,147 @@ function StockGestion({ activeTab, setActiveTab, TABS, API_URL }) {
         ))}
       </nav>
 
-      {message && <p className="flash flash--success">{message}</p>}
-      {error   && <p className="flash flash--error">{error}</p>}
+      {message && <div className="flash success">{message}</div>}
+      {error   && <div className="flash error">{error}</div>}
 
-      {activeTab === 'types' && (
-        <section className="panel">
-          <h2 className="panel-title">Types de bière</h2>
-          <form className="row-form" onSubmit={createType}>
-            <input value={typeLabel} onChange={e => setTypeLabel(e.target.value)} placeholder="Nouveau type (ex: IPA)" />
-            <button className="btn btn-primary">Ajouter</button>
-          </form>
-          <div className="table-wrap">
-            <table>
-              <thead><tr><th>ID</th><th>Libellé</th><th>Actions</th></tr></thead>
-              <tbody>
-                {types.map(type => (
-                  <tr key={type.id}>
-                    <td>{type.id}</td>
-                    <td>{type.libelle}</td>
-                    <td className="actions">
-                      <button className="btn btn-ghost"  onClick={() => updateType(type)}>Modifier</button>
-                      <button className="btn btn-danger" onClick={() => deleteType(type.id)}>Supprimer</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      )}
-
-      {activeTab === 'formats' && (
-        <section className="panel">
-          <h2 className="panel-title">Formats</h2>
-          <form className="row-form" onSubmit={createFormat}>
-            <input value={formatLabel} onChange={e => setFormatLabel(e.target.value)} placeholder="Nouveau format (ex: Canette 33cl)" />
-            <button className="btn btn-primary">Ajouter</button>
-          </form>
-          <div className="table-wrap">
-            <table>
-              <thead><tr><th>ID</th><th>Libellé</th><th>Actions</th></tr></thead>
-              <tbody>
-                {formats.map(format => (
-                  <tr key={format.id}>
-                    <td>{format.id}</td>
-                    <td>{format.libelle}</td>
-                    <td className="actions">
-                      <button className="btn btn-ghost"  onClick={() => updateFormat(format)}>Modifier</button>
-                      <button className="btn btn-danger" onClick={() => deleteFormat(format.id)}>Supprimer</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      )}
-
-      {activeTab === 'stocks' && (
+      {loading ? <p className="loading">Chargement…</p> : (
         <>
-          <section className="panel">
-            <h2 className="panel-title">Ajouter un stock</h2>
-            <form className="row-form" onSubmit={createStock}>
-              <select value={stockForm.idType} onChange={e => setStockForm(f => ({ ...f, idType: e.target.value }))}>
-                <option value="">Type</option>
-                {types.map(t => <option key={t.id} value={t.id}>{t.libelle}</option>)}
-              </select>
-              <select value={stockForm.idFormat} onChange={e => setStockForm(f => ({ ...f, idFormat: e.target.value }))}>
-                <option value="">Format</option>
-                {formats.map(f => <option key={f.id} value={f.id}>{f.libelle}</option>)}
-              </select>
-              <input type="number" min="0" value={stockForm.quantite} onChange={e => setStockForm(f => ({ ...f, quantite: e.target.value }))} placeholder="Quantité" />
-              <button className="btn btn-primary">Ajouter</button>
-            </form>
-          </section>
-
-          <section className="panel">
-            <h2 className="panel-title">Stocks</h2>
-
-            {/* Images des produits */}
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', alignItems: 'center' }}>
-              <img src="/ressources/produits-01.png" alt="produit 1" style={{ height: '60px', objectFit: 'contain' }} />
-              <img src="/ressources/produits-02.png" alt="produit 2" style={{ height: '60px', objectFit: 'contain' }} />
-              <img src="/ressources/produits-03.png" alt="produit 3" style={{ height: '60px', objectFit: 'contain' }} />
-            </div>
-
-            <div className="table-wrap">
-              <table>
-                <thead><tr><th>ID</th><th>Type</th><th>Format</th><th>Quantité</th><th>Actions</th></tr></thead>
-                <tbody>
-                  {stocks.map(stock => {
-                    const isEditing = editId === stock.id
-                    return (
-                      <tr key={stock.id}>
-                        <td>{stock.id}</td>
-                        <td>
-                          {isEditing
-                            ? <select value={stockEditForm.idType} onChange={e => setStockEditForm(f => ({ ...f, idType: e.target.value }))}>
-                                {types.map(t => <option key={t.id} value={t.id}>{t.libelle}</option>)}
-                              </select>
-                            : types.find(t => t.id === stock.idType)?.libelle
-                          }
-                        </td>
-                        <td>
-                          {isEditing
-                            ? <select value={stockEditForm.idFormat} onChange={e => setStockEditForm(f => ({ ...f, idFormat: e.target.value }))}>
-                                {formats.map(f => <option key={f.id} value={f.id}>{f.libelle}</option>)}
-                              </select>
-                            : formats.find(f => f.id === stock.idFormat)?.libelle
-                          }
-                        </td>
-                        <td>
-                          {isEditing
-                            ? <input type="number" min="0" value={stockEditForm.quantite} onChange={e => setStockEditForm(f => ({ ...f, quantite: e.target.value }))} />
-                            : stock.quantite
-                          }
-                        </td>
+          {activeTab === 'types' && (
+            <section className="panel">
+              <h2 className="panel-title">Types de bière</h2>
+              <form className="row-form" onSubmit={createType}>
+                <input value={typeLabel} onChange={e => setTypeLabel(e.target.value)} placeholder="Nouveau type (ex: IPA)" />
+                <button className="btn btn-primary">Ajouter</button>
+              </form>
+              <div className="table-wrap">
+                <table>
+                  <thead><tr><th>ID</th><th>Libellé</th><th>Actions</th></tr></thead>
+                  <tbody>
+                    {types.map(type => (
+                      <tr key={type.id}>
+                        <td>{type.id}</td>
+                        <td>{type.libelle}</td>
                         <td className="actions">
-                          {isEditing ? (
-                            <>
-                              <button className="btn btn-primary" onClick={saveStock}>Sauvegarder</button>
-                              <button className="btn btn-ghost"   onClick={() => setEditId(null)}>Annuler</button>
-                            </>
-                          ) : (
-                            <>
-                              <button className="btn btn-ghost"  onClick={() => { setEditId(stock.id); setStockEditForm({ idType: stock.idType, idFormat: stock.idFormat, quantite: stock.quantite }) }}>Modifier</button>
-                              <button className="btn btn-danger" onClick={() => deleteStock(stock.id)}>Supprimer</button>
-                            </>
-                          )}
+                          <button className="btn btn-ghost"  onClick={() => updateType(type)}>Modifier</button>
+                          <button className="btn btn-danger" onClick={() => deleteType(type.id)}>Supprimer</button>
                         </td>
                       </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </section>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
+
+          {activeTab === 'formats' && (
+            <section className="panel">
+              <h2 className="panel-title">Formats</h2>
+              <form className="row-form" onSubmit={createFormat}>
+                <input value={formatLabel} onChange={e => setFormatLabel(e.target.value)} placeholder="Nouveau format (ex: 33cl)" />
+                <button className="btn btn-primary">Ajouter</button>
+              </form>
+              <div className="table-wrap">
+                <table>
+                  <thead><tr><th>ID</th><th>Libellé</th><th>Actions</th></tr></thead>
+                  <tbody>
+                    {formats.map(format => (
+                      <tr key={format.id}>
+                        <td>{format.id}</td>
+                        <td>{format.libelle}</td>
+                        <td className="actions">
+                          <button className="btn btn-ghost"  onClick={() => updateFormat(format)}>Modifier</button>
+                          <button className="btn btn-danger" onClick={() => deleteFormat(format.id)}>Supprimer</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
+
+          {activeTab === 'stocks' && (
+            <>
+              <section className="panel">
+                <h2 className="panel-title">Ajouter un stock</h2>
+                <form className="row-form" onSubmit={createStock}>
+                  <select value={stockForm.idType} onChange={e => setStockForm(f => ({ ...f, idType: e.target.value }))}>
+                    <option value="">-- Type --</option>
+                    {types.map(t => <option key={t.id} value={t.id}>{t.libelle}</option>)}
+                  </select>
+                  <select value={stockForm.idFormat} onChange={e => setStockForm(f => ({ ...f, idFormat: e.target.value }))}>
+                    <option value="">-- Format --</option>
+                    {formats.map(f => <option key={f.id} value={f.id}>{f.libelle}</option>)}
+                  </select>
+                  <input type="number" min="0" value={stockForm.quantite} onChange={e => setStockForm(f => ({ ...f, quantite: e.target.value }))} placeholder="Quantité" />
+                  <button className="btn btn-primary">Ajouter</button>
+                </form>
+              </section>
+
+              <section className="panel">
+                <h2 className="panel-title">Stocks</h2>
+
+                <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', alignItems: 'center' }}>
+                  <img src="/ressources/produits-01.png" alt="produit 1" style={{ height: '60px', objectFit: 'contain' }} />
+                  <img src="/ressources/produits-02.png" alt="produit 2" style={{ height: '60px', objectFit: 'contain' }} />
+                  <img src="/ressources/produits-03.png" alt="produit 3" style={{ height: '60px', objectFit: 'contain' }} />
+                  <img src="/ressources/gin.png"         alt="produit 4" style={{ height: '60px', objectFit: 'contain' }} />
+                  <img src="/ressources/whisky.png"      alt="produit 5" style={{ height: '60px', objectFit: 'contain' }} />
+                </div>
+
+                <div className="table-wrap">
+                  <table>
+                    <thead><tr><th>ID</th><th>Type</th><th>Format</th><th>Quantité</th><th>Actions</th></tr></thead>
+                    <tbody>
+                      {stocks.map(stock => {
+                        const isEditing = editId === stock.id
+                        return (
+                          <tr key={stock.id}>
+                            <td>{stock.id}</td>
+                            <td>
+                              {isEditing
+                                ? <select value={stockEditForm.idType} onChange={e => setStockEditForm(f => ({ ...f, idType: e.target.value }))}>
+                                    {types.map(t => <option key={t.id} value={t.id}>{t.libelle}</option>)}
+                                  </select>
+                                : stock.type
+                              }
+                            </td>
+                            <td>
+                              {isEditing
+                                ? <select value={stockEditForm.idFormat} onChange={e => setStockEditForm(f => ({ ...f, idFormat: e.target.value }))}>
+                                    {formats.map(f => <option key={f.id} value={f.id}>{f.libelle}</option>)}
+                                  </select>
+                                : stock.format
+                              }
+                            </td>
+                            <td>
+                              {isEditing
+                                ? <input type="number" min="0" value={stockEditForm.quantite} onChange={e => setStockEditForm(f => ({ ...f, quantite: e.target.value }))} />
+                                : stock.quantite
+                              }
+                            </td>
+                            <td className="actions">
+                              {isEditing ? (
+                                <>
+                                  <button className="btn btn-primary" onClick={saveStock}>Sauvegarder</button>
+                                  <button className="btn btn-ghost"   onClick={() => setEditId(null)}>Annuler</button>
+                                </>
+                              ) : (
+                                <>
+                                  <button className="btn btn-ghost"  onClick={() => { setEditId(stock.id); setStockEditForm({ idType: stock.idType, idFormat: stock.idFormat, quantite: stock.quantite }) }}>Modifier</button>
+                                  <button className="btn btn-danger" onClick={() => deleteStock(stock.id)}>Supprimer</button>
+                                </>
+                              )}
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </>
+          )}
         </>
       )}
     </>
