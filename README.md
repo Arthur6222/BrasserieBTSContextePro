@@ -2,24 +2,23 @@
 
 Application full-stack de gestion de stock pour brasserie.
 
-## 📋 Structure du projet
+##  Structure du projet
 - **Backend** : API REST construite avec Dart et Shelf.
 - **Frontend** : Interface d'administration en React (Vite).
 - **Base de données** : SQLite (local) et Supabase (auth).
 
-##  Installation et Lancement
+##  Installation et LancemenT
 
-### 1. Backend
-```bash
-
-
-# Installer les dépendances
+### Installer les dépendances
 dart pub get
 
 # Lancer le serveur (port 8080)
 dart run bin/server.dart
 
-### 2. Front-end
 
-# Lancer l'interface (Vite)
+
+### Installer les dépendances
+npm install
+
+### Lancer l'interface (Vite)
 npm run dev
